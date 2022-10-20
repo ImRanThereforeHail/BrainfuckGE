@@ -13,8 +13,8 @@ This is a feature, not a bug.
 Here is what you need to do to use this engine.
 
 ```bash
-git clone 
-cd brainfck
+git clone https://github.com/ImRanThereforeHail/BrainfuckGE.git
+cd BrainfuckGe
 cargo run --release
 ```
 A "Hello world!" message should appear. 
@@ -61,3 +61,4 @@ Keep in mind that since the array is never deleted, the values will keep going u
 # TODO
 - File to be used goes an argument, rather than always the main.bf
 - Be able to change grid size
+- Rewrite front-end (all in src/main.rs)
