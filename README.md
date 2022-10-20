@@ -62,3 +62,4 @@ Keep in mind that since the array is never deleted, the values will keep going u
 - File to be used goes an argument, rather than always the main.bf
 - Be able to change grid size
 - Rewrite front-end (all in src/main.rs)
+- Use '*' to update the screen
