@@ -59,19 +59,21 @@ fn main() {
         let (wx,wy) = (window.size().x, window.size().y);
 
         let mut pencil = Pencil::new(window.canvas_mut());
-        pencil.draw_text(&format!("FPS: {}", fps_counter.count()), Vec2::xy(0, 0));
+        pencil.draw_text(&format!("FPS: {}", fps_counter.count()), Vec2::xy(0, prefy));
 
         for y in 0..prefy {
             for x in 0..prefx {
                 let is_painted = bf.array[y * prefy + x] > 0;
                 if !is_painted { continue; }
-
-                pencil
+                
+                pencil.set_background(ruscii::terminal::Color::White);
+                pencil.draw_char(' ', Vec2::xy(x, y));
+                /* pencil
                 .draw_rect(
                     &RectCharset::simple_lines(),
                     Vec2::xy((wx / prefx as i32) * x as i32, (wy / prefy as i32) * y as i32),
                     Vec2::xy(wx / prefx as i32,wy / prefy as i32)
-                );
+                ); */
             }
         }
 
