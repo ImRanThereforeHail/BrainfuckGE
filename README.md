@@ -11,6 +11,8 @@ This is a feature, not a bug.
 
 ## Language
 
+The engine runs on a custom brainfuck, tailored for gaming. Below are the changes:
+
 ### Headers
 
 Headers are always in the beginning of a file, separated by '£'. A .bf file used by this engine should start with something like:
@@ -34,8 +36,6 @@ Should be mentioned that **loops are not do-while**, they are **while**. this me
 Won't show anything
 
 ### Comma (,)
-
-The language used for the logic is a custom brainfuck. Below are the changes:
 
 In order to get input, rather than using just ',', you use ',LetterOfYourChoice', for instance
 
@@ -131,9 +131,10 @@ Here, we paint two cells, show the screen, then undo what we did. After that, it
 
 
 # TODO
-- Be able to change grid size (CAN'T DUE TO UNKNOWN GLITCH)
+- Fix smaller resolution glitches
 
 # Done
 - File to be used goes an argument, rather than always the main.bf
 - Use '*' to update canvas
 - Rewrite front-end (all in src/main.rs)
+- Fixed main resolution glitch
