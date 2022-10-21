@@ -1,36 +1,81 @@
 use std::fs;
-use pixel_canvas::{Canvas, Color, Image};
+use std::env;
+use ruscii::app::{App, State};
+use ruscii::drawing::RectCharset;
+use ruscii::terminal::{Window};
+use ruscii::drawing::{Pencil};
+use ruscii::keyboard::{KeyEvent, Key};
+use ruscii::spatial::{Vec2};
+use ruscii::gui::{FPSCounter};
 
 mod compiler;
 
 fn main() {
-    let mut bf = compiler::BrainFuck {
-        array: [0; 1024],
-    };
-    let f = fs::read_to_string("main.bf").unwrap();
-
-    let canvas = Canvas::new(32, 32)
-                                .title("It'sa me, mario!");
-
+    if env::args().len() < 2 { panic!("Please provide a brainfuck source file") }
     
-    canvas.render(
-        move |_, image: &mut Image| {
-            compiler::brainfuck_compiler(&f, &mut bf);
-            
-            let white = Color { r: 255, g: 255, b: 255 };
-            let black = Color { r: 0, g: 0, b: 0 };
-
-            for (y, row) in image.chunks_mut(32).enumerate() {
-                for (x, pixel) in row.iter_mut().enumerate() {
-                    let value = bf.array[y * 32 + x];
-                    if value > 0 {
-                        *pixel = white;
-                    } else {
-                        *pixel = black;
-                    }
-                }
-            }
-            
+    let mut logic = String::new();
+    for argument in env::args() {
+        // Chack if this is the first iteneration of the loop
+        if logic.len() == 0 {
+            logic += " ";
+            continue;
         }
-    );
+        // Check if source code has been written
+        if logic.len() > 1 { panic!("More than 1 source file was given!")}
+
+        logic += &fs::read_to_string(&argument).expect("Path does not exist");
+    }
+
+    // Delete unnecessary stuff
+    //let logic = logic.chars().filter(|i| "><-+.[],*".contains(*i)).fold(String::new(), |init, char| init + &char.to_string());
+    // Cannot do this due to the way the input works
+    
+    // Get the preffered dimensions
+    let pref_dimensions = &logic.split('£').collect::<Vec<&str>>();
+    let (prefx, prefy): (usize, usize) = (pref_dimensions[0].trim().parse().unwrap(), pref_dimensions[1].trim().parse().unwrap());
+
+
+    let mut bf = compiler::BrainFuck {
+        array: vec![0; (prefx*prefy).try_into().unwrap()],
+        main_loop_index: 0,
+        array_index: 0,
+        in_loop: vec![0],
+    };
+
+    let mut fps_counter = FPSCounter::new();
+    let mut app = App::new();
+
+    app.run(|app_state: &mut State, window: &mut Window| {
+        for key_event in app_state.keyboard().last_key_events() {
+            match key_event {
+                KeyEvent::Pressed(Key::Esc) => app_state.stop(),
+                KeyEvent::Pressed(Key::Q) => app_state.stop(),
+                _ => (),
+            }
+        }
+
+        compiler::brainfuck_compiler(&logic, &mut bf, app_state, (prefx, prefy));
+
+        let (wx,wy) = (window.size().x, window.size().y);
+
+        let mut pencil = Pencil::new(window.canvas_mut());
+        pencil.draw_text(&format!("FPS: {}", fps_counter.count()), Vec2::xy(0, 0));
+
+        for y in 0..prefy {
+            for x in 0..prefx {
+                let is_painted = bf.array[y * prefy + x] > 0;
+                if !is_painted { continue; }
+
+                pencil
+                .draw_rect(
+                    &RectCharset::simple_lines(),
+                    Vec2::xy((wx / prefx as i32) * x as i32, (wy / prefy as i32) * y as i32),
+                    Vec2::xy(wx / prefx as i32,wy / prefy as i32)
+                );
+            }
+        }
+
+
+        fps_counter.update();
+    });
 }
