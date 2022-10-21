@@ -1,0 +1,25 @@
+warning: unused import: `ruscii::drawing::RectCharset`
+ --> src/main.rs:4:5
+  |
+4 | use ruscii::drawing::RectCharset;
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused variable: `wx`
+  --> src/main.rs:66:14
+   |
+66 |         let (wx,wy) = (window.size().x, window.size().y);
+   |              ^^ help: if this is intentional, prefix it with an underscore: `_wx`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+warning: unused variable: `wy`
+  --> src/main.rs:66:17
+   |
+66 |         let (wx,wy) = (window.size().x, window.size().y);
+   |                 ^^ help: if this is intentional, prefix it with an underscore: `_wy`
+
+warning: `brainfck` (bin "brainfck") generated 3 warnings
+    Finished release [optimized] target(s) in 0.03s
+     Running `target/release/brainfck main.bf`

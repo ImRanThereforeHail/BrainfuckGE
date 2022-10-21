@@ -2,9 +2,10 @@ use ruscii::{app::State, keyboard::{KeyEvent, Key}};
 
 
 pub struct BrainFuck {
-    pub array: Vec<u8>,
+    pub array: Vec<Vec<u8>>,
     pub main_loop_index: usize,
     pub array_index: usize,
+    pub current_array: usize,
 
     //It's a vector to allow nested loops     // The index where the loop started
     pub in_loop:                                Vec<usize>,
@@ -12,6 +13,8 @@ pub struct BrainFuck {
 
 
 pub fn brainfuck_compiler(program: &str, bf: &mut BrainFuck, app_state: &mut State, (prefx, prefy): (usize, usize)) {
+
+    if program.is_empty() { return; }
 
     let program = program.as_bytes();
 
@@ -28,25 +31,34 @@ pub fn brainfuck_compiler(program: &str, bf: &mut BrainFuck, app_state: &mut Sta
             
             b'<' => if bf.array_index > 0 {bf.array_index -= 1},
             
-            b'+' => if bf.array[bf.array_index] < 255 {bf.array[bf.array_index] += 1},
+            b'+' => if bf.array[bf.current_array][bf.array_index] < 255 {bf.array[bf.current_array][bf.array_index] += 1},
             
-            b'-' => if bf.array[bf.array_index] > 0 {bf.array[bf.array_index] -= 1},
+            b'-' => if bf.array[bf.current_array][bf.array_index] > 0 {bf.array[bf.current_array][bf.array_index] -= 1},
             
-            b'.' => print!("{}", bf.array[bf.array_index] as char),
+            b'.' => eprintln!("You said: {}", bf.array[bf.current_array][bf.array_index] as char),
             
-            b'[' => bf.in_loop.push(bf.main_loop_index),
+            b'[' => if bf.array[bf.current_array][bf.array_index] != 0 {
+                bf.in_loop.push(bf.main_loop_index)
+            } else {
+                for charindex in bf.main_loop_index..program.len() {
+                    if program[charindex] == b']' {
+                        bf.main_loop_index = charindex;
+                        break;
+                    }
+                }
+            },
             
-            b']' => if bf.array[bf.array_index] == 0 {bf.in_loop.pop();} else {bf.main_loop_index = *bf.in_loop.last().unwrap_or(&bf.main_loop_index)},
+            b']' => if bf.array[bf.current_array][bf.array_index] == 0 {bf.in_loop.pop();} else {bf.main_loop_index = *bf.in_loop.last().unwrap_or(&bf.main_loop_index)},
             
             b',' => {
                 let key = program[bf.main_loop_index + 1];
 
                 for key_event in app_state.keyboard().last_key_events() {
                     match key_event {
-                        KeyEvent::Pressed(Key::W) => if key == b'w' {bf.array[bf.array_index] = b'w';},
-                        KeyEvent::Pressed(Key::A) => if key == b'a' {bf.array[bf.array_index] = b'a';},
-                        KeyEvent::Pressed(Key::S) => if key == b's' {bf.array[bf.array_index] = b's';},
-                        KeyEvent::Pressed(Key::D) => if key == b'd' {bf.array[bf.array_index] = b'd';},
+                        KeyEvent::Pressed(Key::W) => if key == b'w' {bf.array[bf.current_array][bf.array_index] = b'w';},
+                        KeyEvent::Pressed(Key::A) => if key == b'a' {bf.array[bf.current_array][bf.array_index] = b'a';},
+                        KeyEvent::Pressed(Key::S) => if key == b's' {bf.array[bf.current_array][bf.array_index] = b's';},
+                        KeyEvent::Pressed(Key::D) => if key == b'd' {bf.array[bf.current_array][bf.array_index] = b'd';},
                         _ => (),
                     }
                 }
@@ -59,6 +71,8 @@ pub fn brainfuck_compiler(program: &str, bf: &mut BrainFuck, app_state: &mut Sta
             },
 
             b'*' => {bf.main_loop_index += 1;break;},
+
+            b'\\' => if bf.current_array == 0 {bf.current_array = 1} else {bf.current_array = 0},
     
             _ => {}
         };
