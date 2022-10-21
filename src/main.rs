@@ -30,22 +30,29 @@ fn main() {
     //let logic = logic.chars().filter(|i| "><-+.[],*".contains(*i)).fold(String::new(), |init, char| init + &char.to_string());
     // Cannot do this due to the way the input works
     
-    // Get the preffered dimensions
-    let pref_dimensions = &logic.split('£').collect::<Vec<&str>>();
-    let (prefx, prefy): (usize, usize) = (pref_dimensions[0].trim().parse().unwrap(), pref_dimensions[1].trim().parse().unwrap());
+    // Get the headers
+    let headers = &logic.split('£').collect::<Vec<&str>>();
+    let (prefx, prefy): (usize, usize) = (headers[0].trim().parse().unwrap(), headers[1].trim().parse().unwrap());
 
 
     let mut bf = compiler::BrainFuck {
-        array: vec![0; (prefx*prefy).try_into().unwrap()],
+        array: vec![vec![0; (prefx*prefy).try_into().unwrap()], vec![0; (prefx*prefy).try_into().unwrap()]],
         main_loop_index: 0,
         array_index: 0,
-        in_loop: vec![0],
+        in_loop: Vec::new(),
+        current_array: 0,
     };
 
     let mut fps_counter = FPSCounter::new();
     let mut app = App::new();
 
+    let mut is_first_iteration = true;
     app.run(|app_state: &mut State, window: &mut Window| {
+        if is_first_iteration {
+            compiler::brainfuck_compiler(headers[2], &mut bf, app_state, (prefx, prefy));
+            is_first_iteration = false;
+        }
+
         for key_event in app_state.keyboard().last_key_events() {
             match key_event {
                 KeyEvent::Pressed(Key::Esc) => app_state.stop(),
@@ -54,7 +61,7 @@ fn main() {
             }
         }
 
-        compiler::brainfuck_compiler(&logic, &mut bf, app_state, (prefx, prefy));
+        compiler::brainfuck_compiler(&headers[3], &mut bf, app_state, (prefx, prefy));
 
         let (wx,wy) = (window.size().x, window.size().y);
 
@@ -63,7 +70,7 @@ fn main() {
 
         for y in 0..prefy {
             for x in 0..prefx {
-                let is_painted = bf.array[y * prefy + x] > 0;
+                let is_painted = bf.array[0][y * prefy + x] > 0;
                 if !is_painted { continue; }
                 
                 pencil.set_background(ruscii::terminal::Color::White);
