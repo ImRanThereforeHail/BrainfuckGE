@@ -15,16 +15,18 @@ The engine runs on a custom brainfuck, tailored for gaming. Below are the change
 
 ### Headers
 
-Headers are always in the beginning of a file, separated by '£'. A .bf file used by this engine should start with something like:
+Headers are always in the beginning of a file, separated by '£'. A brainfuck source file used by this engine should start with something like:
 
 ```
-64£32£*£
+32£32£*£
 ```
 Let me go over this.
 
 The format is "x £ y £ init_script *£ code"
 
-A better explanation will come out tomorrow
+You can think of the x and the y as the resolution you're playing at, being x the horizontal resolution and y the vertical. You needn't worry all that much; as of now they must be equal, or some weird glitches happen.
+
+The init script is ran only once in the beginning of the game. It's supposed to be used, for instance, in a snake game, to spawn the snake. It must always end in * and then the usual separator, or the game hangs. Keep in mind that if you use * in the middle of the code, anything until the £ won't run.
 
 ### Loops
 
@@ -58,7 +60,7 @@ The glob was added to refresh the screen. Whenever the glob appears in the code,
 +*->+*[-<]
 ```
 
-You should now see 2 blocks blinking!
+You should see 2 blocks blinking!
 
 Note: The init script should **always** end with a glob (if you want it empty, use only a glob)
 
@@ -66,7 +68,7 @@ Note: The init script should **always** end with a glob (if you want it empty, u
 
 In BrainFuckGE there is a second array, since without it, all the data you have is transmitted to the screen. The second array is used for *under the hood* stuff, and \\ toggles between the main array and the subrarray. Think of it as the inventory toggle in *Stardew Valley*!
 
-It's hard to give a simple example for this one, here goes!
+It's hard to give a simple example for this one, but here goes nothing!
 
 ```
 Add 4 to index 0 in the subarray
@@ -94,9 +96,9 @@ Here is what you need to do to use this engine.
 ```bash
 git clone https://github.com/ImRanThereforeHail/BrainfuckGE.git
 cd BrainfuckGe
-cargo run --release main.bf
+cargo run --release examples/hello.bf
 ```
-A "Hello world!" message should appear. 
+A "HELLO" message should appear. 
 
 # First steps
 Head on to any file of your choice
@@ -113,7 +115,7 @@ You can! So long as said object isn't invisible (which is not supported) just as
 # Examples 
 
 This code paints a whole 32x32 canvas white
-```brainfuck
+```
 32£32£*£
 +>*
 ```
@@ -131,7 +133,18 @@ Here, we paint two cells, show the screen, then undo what we did. After that, it
 
 
 # TODO
-- Fix smaller resolution glitches
+- Fix resolution glitches - Can't have anything but a square. If y > x the white spots start multiplying and if x > y the program panics.  Try:
+
+```
+128£16£*£
++[>+*<->]
+```
+and
+```
+16£17£*£
++[>+*<->]
+```
+I know what is causing this, but I'm too lazy to fix it.
 
 # Done
 - File to be used goes an argument, rather than always the main.bf
