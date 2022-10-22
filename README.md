@@ -89,6 +89,20 @@ The next line undoes what we just did
 Now the white block should be blinking 
 ```
 
+### Continuous execution
+
+In BrainfuckGE, there are two brainfuck scripts:
+- The init script
+- The script
+
+The init script is only ran once, before the first frame is rendered. The script, however, is ran in an infinite loop. **Whenever a glob appears, the frame is rendered and the code keeps running as if it isn't there**.
+If there are no globs in the code, the screen will hang, as the frames won't get rendered. The same happens for infinite loops, for instance:
+
+```
++[]*
+```
+Will hang.
+
 # Setup
 
 Here is what you need to do to use this engine.
@@ -100,19 +114,7 @@ cargo run --release examples/hello.bf
 ```
 A "HELLO" message should appear. 
 
-# First steps
-Head on to any file of your choice
-
-The inner workings of the engine are very simple. You have an array of size **1024** which acts as a **32 x 32 grid** in the canvas. (In future versions you should be able to adjust the size). If a value inside the array is greater than 0 its corresponding pixel will be white; else, the corresponding pixel will be black.
-
-The brainfuck code runs in a loop; 
-
-# Answering questions
-
-- Can I have objects?
-You can! So long as said object isn't invisible (which is not supported) just assign a number from 0 to 255 as an alias to said object, and in the next iteration of the loop you'll know what pixel represents what.
-
-# Examples 
+# How-to
 
 This code paints a whole 32x32 canvas white
 ```
@@ -144,7 +146,7 @@ and
 16£17£*£
 +[>+*<->]
 ```
-I know what is causing this, but I'm too lazy to fix it.
+I know more or less what is causing this, but I'm too lazy to fix it.
 
 # Done
 - File to be used goes an argument, rather than always the main.bf
