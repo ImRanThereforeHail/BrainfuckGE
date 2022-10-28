@@ -68,7 +68,7 @@ Note: The init script should **always** end with a glob (if you want it empty, u
 
 In BrainFuckGE there is a second array, since without it, all the data you have is transmitted to the screen. The second array is used for *under the hood* stuff, and \\ toggles between the main array and the subrarray. Think of it as the inventory toggle in *Stardew Valley*!
 
-It's hard to give a simple example for this one, but here goes nothing!
+Here's an example:
 
 ```
 Add 4 to index 0 in the subarray
@@ -86,8 +86,8 @@ Now a white block should appear
 The next line undoes what we just did
 \[-]
 
-Now the white block should be blinking 
 ```
+Now the white block should be blinking 
 
 ### Continuous execution
 
