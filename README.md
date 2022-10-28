@@ -146,7 +146,6 @@ and
 16£17£*£
 +[>+*<->]
 ```
-I know more or less what is causing this, but I'm too lazy to fix it.
 
 # Done
 - File to be used goes an argument, rather than always the main.bf
